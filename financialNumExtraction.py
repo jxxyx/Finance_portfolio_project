@@ -28,20 +28,22 @@ pd.set_option('display.max_colwidth', None)
 # -----------------------------
 # Step 1: Load Ticker
 # -----------------------------
+#later create a for loop/ array to run through multiple tickers
+
 ticker = yf.Ticker("AAPL")
 
-# -----------------------------
-# Step 2: Get Historical Data (5 Years)
-# -----------------------------
+#past 5 years of price data
 hist = ticker.history(period="5y")
+df_hist = pd.DataFrame(hist)
+#All the Net Income, Revenue, etc. are in the same dataframe
+earning =  ticker.financials
+df_earning = pd.DataFrame(earning)
+#analyst recommendations, strongBuy, buy, hold, sell, strong sell
+analyst_recs = ticker.recommendations
+df_analyst_recs = pd.DataFrame(analyst_recs)
 
-# Show in console
-print(hist)
 
-# Optional: Save to CSV
-hist.to_csv("AAPL_5y_history.csv")
+info = ticker.info
+#example of how to access the single values
+print(info['trailingPE'])
 
-# -----------------------------
-# Step 3: Optional - Explore Methods
-# -----------------------------
-# print(dir(ticker))  # Uncomment if you want to see all available attributes
