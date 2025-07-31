@@ -1,26 +1,53 @@
-
-# NOT IN USE RN. USING YFINANCE THROUGH PIP INSTALL
-
+from yahoo_fin import news
 from dotenv import load_dotenv
 import os
-import http.client
+import pandas as pd
+import sys
 
-load_dotenv()  # Load .env file
+# Ensure UTF-8 printing (especially for Windows terminals)
+sys.stdout.reconfigure(encoding='utf-8')
 
-api_key = os.getenv("RAPIDAPI_KEY")
+# Load environment variables (still good to keep for future use)
+load_dotenv()
+
+# ---------------------------------------
+# 1. GET COMPANY-SPECIFIC NEWS (Yahoo RSS)
+# ---------------------------------------
+ticker = "AAPL"
+rss_news = news.get_yf_rss(ticker)
+rss_df = pd.DataFrame(rss_news)
+
+print(f"✅ Pulled {len(rss_df)} articles for {ticker} via Yahoo RSS\n")
+print(rss_df)
+
+# Filter for Apple-specific headlines
+filtered_df = rss_df[rss_df['title'].str.contains("Apple|AAPL", case=False, na=False)]
+
+print(f"✅ {len(filtered_df)} Apple-related articles found")
+print(filtered_df[["title", "link"]])
 
 
-conn = http.client.HTTPSConnection("yahoo-finance15.p.rapidapi.com")
+with pd.ExcelWriter("C:\\Users\\Howai\\OneDrive - Singapore Institute Of Technology\\side-projects\\Finance_portfolio_project\\apple_news_combined.xlsx") as writer:
+    rss_df.to_excel(writer, sheet_name="Sector_News", index=False)
+    filtered_df.to_excel(writer, sheet_name="Company_News", index=False)
 
-headers = {
-    'x-rapidapi-key': api_key,
-    'x-rapidapi-host': "yahoo-finance15.p.rapidapi.com"
-}
+print("✅ Saved sector and company news to 'apple_news_combined.xlsx'")
 
-conn.request(
-    "GET", "/api/v1/markets/quote?ticker=AAPL&type=STOCKS", headers=headers)
 
-res = conn.getresponse()
-data = res.read()
+# # GETTING COMPANY RSI
+# url = "https://yahoo-finance15.p.rapidapi.com/api/v1/markets/indicators/rsi"
 
-print(data.decode("utf-8"))
+# querystring = {"symbol": "AAPL", "interval": "5m",
+#                "series_type": "close", "time_period": "50", "limit": "50"}
+
+# headers = {
+#     "x-rapidapi-key": api_key,
+#     "x-rapidapi-host": "yahoo-finance15.p.rapidapi.com"
+# }
+
+# rsi_response = requests.get(url, headers=headers, params=querystring)
+
+# print(rsi_response.json())
+
+
+

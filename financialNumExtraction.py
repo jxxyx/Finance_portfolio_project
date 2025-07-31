@@ -41,7 +41,15 @@ df_earning = pd.DataFrame(earning)
 #analyst recommendations, strongBuy, buy, hold, sell, strong sell
 analyst_recs = ticker.recommendations
 df_analyst_recs = pd.DataFrame(analyst_recs)
+# print(df_analyst_recs)
 
+with pd.ExcelWriter("C:\\Users\\Howai\\OneDrive - Singapore Institute Of Technology\\side-projects\\Finance_portfolio_project\\apple_financialNumbers.xlsx") as writer:
+    df_hist.index = df_hist.index.tz_localize(None).date
+    df_hist.reset_index().to_excel(writer, sheet_name="Historical_Data", index=False)
+    df_earning.reset_index().to_excel(writer, sheet_name="Earnings", index=False)
+    df_analyst_recs.reset_index().to_excel(writer, sheet_name="Analyst_Recommendations", index=False)
+
+print(" Saved financial data to 'apple_financialNumbers.xlsx'")
 
 info = ticker.info
 #example of how to access the single values
